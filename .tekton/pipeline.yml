@@ -1,0 +1,43 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ci-pipeline
+spec:
+  workspaces:
+    - name: source
+  tasks:
+    - name: cleanup
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: source
+
+    - name: clone
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: source
+      params:
+        - name: url
+          value: https://github.com/your-org/ci-cd-final-project.git
+        - name: revision
+          value: main
+
+    - name: eslint
+      taskRef:
+        name: eslint
+      workspaces:
+        - name: source
+          workspace: source
+
+    - name: jest-test
+      taskRef:
+        name: jest-test
+      workspaces:
+        - name: source
+          workspace: source
+      params:
+        - name: args
+          value: "-v"
